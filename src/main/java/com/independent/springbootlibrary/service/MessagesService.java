@@ -2,9 +2,12 @@ package com.independent.springbootlibrary.service;
 
 import com.independent.springbootlibrary.dao.MessageRepository;
 import com.independent.springbootlibrary.entity.Message;
+import com.independent.springbootlibrary.requestmodels.AdminQuestionReequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -20,5 +23,19 @@ public class MessagesService {
         Message message = new Message(messageRequest.getTitle(),messageRequest.getQuestion());
         message.setUserEmail(userEmail);
         messageRepository.save(message);
+    }
+
+    public void putMessage(AdminQuestionReequest adminQuestionReequest,
+                           String userEmail) throws Exception{
+        Optional<Message> message= messageRepository.findById(adminQuestionReequest.getId());
+        if(!message.isPresent()){
+            throw new Exception("message not found");
+        }
+
+        message.get().setAdminEmail(userEmail);
+        message.get().setResponse(adminQuestionReequest.getResponse());
+        message.get().setClosed(true);
+        messageRepository.save(message.get());
+
     }
 }
